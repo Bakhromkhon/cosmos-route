@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v53';
+const CACHE_VERSION = 'green-route-v54';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
@@ -6,15 +6,21 @@ const SHELL_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest.json',
-  './css/app.css?v=2',
+  './css/app.css?v=3',
   './icons/icon.svg',
   './icons/icon-maskable.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
   './data/route.js?v=1',
-  './js/main.js?v=51',
+  './js/main.js?v=52',
   './data/route.json',
+  './assets/fonts/inter-normal-cyrillic.woff2',
+  './assets/fonts/inter-normal-latin.woff2',
+  './assets/fonts/playfair-display-normal-cyrillic.woff2',
+  './assets/fonts/playfair-display-italic-cyrillic.woff2',
+  './assets/fonts/playfair-display-normal-latin.woff2',
+  './assets/fonts/playfair-display-italic-latin.woff2',
   './assets/images/step-1-fasad-v2.jpg',
   './assets/images/step-2-vhod-v2.jpg',
   './assets/images/step-3-ohrana-v2.jpg',
@@ -68,6 +74,11 @@ self.addEventListener('fetch', (event) => {
 
   if (request.destination === 'image') {
     event.respondWith(cacheFirst(request, IMAGE_CACHE));
+    return;
+  }
+
+  if (request.destination === 'font') {
+    event.respondWith(cacheFirst(request, SHELL_CACHE));
     return;
   }
 

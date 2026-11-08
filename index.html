@@ -10,11 +10,23 @@
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <link rel="manifest" href="./manifest.webmanifest.json">
-    <link rel="stylesheet" href="./css/app.css?v=2">
+    <link rel="preload" href="./assets/fonts/playfair-display-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./assets/fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="./css/app.css?v=3">
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/main.js?v=51" defer></script>
+    <script src="./js/main.js?v=52" defer></script>
   </head>
   <body>
+    <div class="splash" id="splash" aria-hidden="true">
+      <div class="splash__inner">
+        <span class="splash__mark">
+          <svg viewBox="0 0 32 32"><path d="M16 27s9-8.2 9-15a9 9 0 1 0-18 0c0 6.8 9 15 9 15Z"/><circle cx="16" cy="12" r="3"/></svg>
+        </span>
+        <span class="splash__word">COSMOS</span>
+        <span class="splash__sub">STAFF ROUTE</span>
+        <span class="splash__bar"><i></i></span>
+      </div>
+    </div>
     <div class="status-stack" aria-label="Статус приложения">
       <div class="status-banner status-banner--offline" id="networkBanner" role="status" aria-live="polite" hidden>
         <span class="status-banner__icon" aria-hidden="true">
@@ -97,33 +109,38 @@
         <div class="intro-panel">
           <div class="intro-panel__head">
             <div class="section-index">ПЕРЕД СТАРТОМ <span>01 / 02</span></div>
-            <h2>Начинаем?</h2>
-            <p>Проверь две вещи — и можно идти.</p>
+            <h2>Проверьте форму</h2>
+            <p>Отметьте рубашку, брюки и обувь.</p>
           </div>
 
           <div class="warning-box">
             <span class="warning-box__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
             </span>
-            <p>Это служебный маршрут. Начни с фасада и не заходи через вход для гостей.</p>
+            <p>Форма обязательна: белый верх, чёрные брюки и чёрная обувь.</p>
           </div>
 
-          <div class="checks" aria-label="Проверка перед началом">
+          <div class="checks" aria-label="Проверка формы перед началом">
             <label class="check-card">
               <input class="intro-check" type="checkbox">
               <span class="check-card__box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg></span>
-              <span class="check-card__content"><strong>Я у фасада отеля</strong><span>Маршрут начинается снаружи, у здания COSMOS.</span></span>
+              <span class="check-card__content"><strong>Белую рубашку взял(а)</strong><span>Или другой разрешённый белый верх.</span></span>
             </label>
             <label class="check-card">
               <input class="intro-check" type="checkbox">
               <span class="check-card__box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg></span>
-              <span class="check-card__content"><strong>Иду на смену в ресторан</strong><span>Пункт назначения — «Шведская Линия».</span></span>
+              <span class="check-card__content"><strong>Чёрные брюки взял(а)</strong><span>Только чёрные брюки. Не джинсы.</span></span>
+            </label>
+            <label class="check-card">
+              <input class="intro-check" type="checkbox">
+              <span class="check-card__box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg></span>
+              <span class="check-card__content"><strong>Чёрную обувь взял(а)</strong><span>Только чёрная аккуратная обувь.</span></span>
             </label>
           </div>
 
           <div class="intro-bottom">
             <div class="intro-actions">
-              <span class="status-pill" id="introStatus" aria-live="polite">Отмечено 0 из 2</span>
+              <span class="status-pill" id="introStatus" aria-live="polite">Отметь все 3 пункта</span>
               <button class="button button--primary button--start" id="startRouteButton" type="button" disabled>
                 <span>Открыть маршрут</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -167,7 +184,7 @@
           </div>
         </aside>
 
-        <div class="viewer">
+        <div class="viewer" id="viewer">
           <header class="viewer__header">
             <div class="viewer__title">
               <span id="viewerEyebrow">ШАГ 1 ИЗ 10</span>

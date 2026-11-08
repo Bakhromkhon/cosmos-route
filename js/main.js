@@ -35,6 +35,7 @@ const mobileProgressTitle = document.getElementById("mobileProgressTitle");
 const mobileProgressPercent = document.getElementById("mobileProgressPercent");
 const mobileProgressBar = document.getElementById("mobileProgressBar");
 const viewerEyebrow = document.getElementById("viewerEyebrow");
+const viewer = document.getElementById("viewer");
 const footerProgress = document.getElementById("footerProgress");
 const stepImage = document.getElementById("stepImage");
 const stepActionOverlay = document.getElementById("stepActionOverlay");
@@ -73,6 +74,23 @@ const objectEyebrow = document.getElementById("objectEyebrow");
 const routeDestinationName = document.getElementById("routeDestinationName");
 const routeEstimatedTime = document.getElementById("routeEstimatedTime");
 const stepCountStat = document.getElementById("stepCountStat");
+const splash = document.getElementById("splash");
+const SPLASH_MIN_MS = 950;
+const bootStartedAt = Date.now();
+let splashHidden = false;
+
+// Прячет стартовый сплэш: не раньше SPLASH_MIN_MS, чтобы анимация бренда успела проиграться.
+function hideSplash() {
+  if (splashHidden) return;
+  splashHidden = true;
+  const wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - bootStartedAt));
+  setTimeout(() => {
+    document.body.classList.add("is-ready");
+    if (!splash) return;
+    splash.classList.add("is-done");
+    setTimeout(() => splash.remove(), 700);
+  }, wait);
+}
 const supervisorLabel = document.getElementById("supervisorLabel");
 const supervisorNumbers = document.getElementById("supervisorNumbers");
 const helpPopoverNumbers = document.getElementById("helpPopoverNumbers");
@@ -106,7 +124,11 @@ function loadFromStorage(key) {
 function updateIntroState() {
   const checkedCount = introChecks.filter(c => c.checked).length;
   const isReady = checkedCount === introChecks.length;
-  introStatus.textContent = "Отмечено " + checkedCount + " из " + introChecks.length;
+  introStatus.textContent = isReady
+    ? "Форма в порядке"
+    : checkedCount === 0
+      ? "Отметь все " + introChecks.length + " пункта"
+      : "Отмечено " + checkedCount + " из " + introChecks.length;
   startRouteButton.disabled = !isReady;
   const hasSavedProgress = currentStepIndex > 0;
   resumeCard.hidden = !hasSavedProgress;
@@ -207,6 +229,8 @@ function renderStep() {
   saveToStorage(STORAGE_KEYS.step, currentStepIndex);
   saveToStorage(STORAGE_KEYS.complete, false);
 
+  viewer.classList.add("is-revealing");
+
   progressTitle.textContent = "Шаг " + (currentStepIndex + 1) + " из " + steps.length;
   progressPercent.textContent = progress + "%";
   progressBar.style.width = progress + "%";
@@ -218,7 +242,19 @@ function renderStep() {
   viewerEyebrow.textContent = progressTitle.textContent;
   footerProgress.textContent = "Шаг " + (currentStepIndex + 1) + " из " + steps.length;
 
+  stepImage.classList.remove("is-loaded", "is-swapping");
   stepImage.src = step.image;
+  stepImage.classList.add("is-swapping");
+  stepImage.onload = function onImageLoaded() {
+    stepImage.classList.remove("is-swapping");
+    stepImage.classList.add("is-loaded");
+    viewer.classList.remove("is-revealing");
+  };
+  if (stepImage.complete && stepImage.naturalWidth) {
+    stepImage.classList.remove("is-swapping");
+    stepImage.classList.add("is-loaded");
+    viewer.classList.remove("is-revealing");
+  }
   stepImage.alt = step.alt;
   stepImage.setAttribute("aria-label", "Открыть крупный фото для шага: " + step.shortTitle);
   titleBlock.hidden = false;
@@ -565,10 +601,12 @@ async function boot() {
     updateIntroState();
     updateNetworkState();
     registerServiceWorker();
+    hideSplash();
     hideUpdateBanner();
   } catch (error) {
-    console.warn("[main] Failed to boot:", error);
+    console.warn("[main] Failed to boot:", error, error && error.stack ? String(error.stack).split("\n").slice(0,6).join(" | ") : "");
     showBootError();
+    hideSplash();
   }
 }
 
