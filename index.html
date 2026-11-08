@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#123b34">
+    <meta name="description" content="Пошаговый офлайн-маршрут до ресторана «Шведская Линия» в отеле Космос Прибалтийская.">
+    <meta name="color-scheme" content="light">
+    <title>Маршрут до ресторана · COSMOS</title>
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.webmanifest.json">
+    <link rel="stylesheet" href="./css/app.css?v=2">
+    <script src="./data/route.js?v=1" defer></script>
+    <script src="./js/main.js?v=51" defer></script>
+  </head>
+  <body>
+    <div class="status-stack" aria-label="Статус приложения">
+      <div class="status-banner status-banner--offline" id="networkBanner" role="status" aria-live="polite" hidden>
+        <span class="status-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 3l18 18M9.8 5.3A15 15 0 0 1 21 9.5M5 12a10 10 0 0 1 3.6-2.8M2 9.5a15 15 0 0 1 2.4-1.7M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg>
+        </span>
+        <span class="status-banner__text" id="networkBannerText"></span>
+      </div>
+
+      <div class="status-banner status-banner--update" id="updateBanner" role="status" hidden>
+        <span class="status-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9a7 7 0 0 1 12-2L20 12M4 12l2.5 5a7 7 0 0 0 12-2"/></svg>
+        </span>
+        <span class="status-banner__text" id="updateBannerText"></span>
+        <button class="button button--banner" id="refreshAppButton" type="button">Обновить</button>
+      </div>
+
+      <div class="status-banner status-banner--install" id="installBanner" role="status" hidden>
+        <span class="status-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
+        </span>
+        <span class="status-banner__text">Установите маршрут на телефон — он будет под рукой даже без интернета.</span>
+        <button class="button button--banner" id="installAppButton" type="button">Установить</button>
+      </div>
+    </div>
+
+    <header class="app-header">
+      <a class="brand" href="./" aria-label="COSMOS — маршрут для персонала">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M16 27s9-8.2 9-15a9 9 0 1 0-18 0c0 6.8 9 15 9 15Z"/><circle cx="16" cy="12" r="3"/></svg>
+        </span>
+        <span class="brand__wordmark"><strong>COSMOS</strong><span>STAFF ROUTE</span></span>
+      </a>
+      <div class="app-header__meta">
+        <span class="app-header__status-dot" aria-hidden="true"></span>
+        <span>Навигация для персонала</span>
+        <span class="app-header__divider" aria-hidden="true"></span>
+        <span>Санкт-Петербург</span>
+      </div>
+    </header>
+
+    <main class="app">
+      <section class="screen screen--intro is-active" id="introScreen" aria-labelledby="introTitle">
+        <div class="welcome-panel">
+          <div class="welcome-panel__top">
+            <span class="eyebrow" id="objectEyebrow">COSMOS · ПРИБАЛТИЙСКАЯ</span>
+            <span class="welcome-panel__index">МАРШРУТ 01 <span aria-hidden="true">/</span> 2026</span>
+          </div>
+
+          <div class="welcome-panel__main">
+            <p class="welcome-panel__kicker"><span aria-hidden="true"></span> ПУТЬ К НАЧАЛУ СМЕНЫ</p>
+            <h1 id="introTitle">Спокойно.<br><em>Ты на месте.</em></h1>
+            <p class="welcome-panel__copy">Проведём тебя от фасада отеля до ресторана — шаг за шагом, по фотографиям реальных ориентиров.</p>
+          </div>
+
+          <div class="route-summary" aria-label="Краткое описание маршрута">
+            <div class="route-summary__point">
+              <span>НАЧАЛО</span>
+              <strong>Фасад отеля</strong>
+            </div>
+            <span class="route-summary__arrow" aria-hidden="true">→</span>
+            <div class="route-summary__point route-summary__point--destination">
+              <span>ФИНИШ</span>
+              <strong id="routeDestinationName">Ресторан «Шведская Линия»</strong>
+            </div>
+            <div class="route-summary__time">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span id="routeEstimatedTime">5–7 минут</span>
+            </div>
+          </div>
+
+          <div class="welcome-stats" aria-label="Особенности маршрута">
+            <div><strong id="stepCountStat">11</strong><span>ориентиров</span></div>
+            <span class="welcome-stats__rule" aria-hidden="true"></span>
+            <div><strong>1</strong><span>этаж маршрута</span></div>
+            <span class="welcome-stats__rule" aria-hidden="true"></span>
+            <div class="welcome-stats__offline"><span class="welcome-stats__offline-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3l18 18M9.8 5.3A15 15 0 0 1 21 9.5M5 12a10 10 0 0 1 3.6-2.8M12 20h.01"/></svg></span><span>работает<br>без сети</span></div>
+          </div>
+        </div>
+
+        <div class="intro-panel">
+          <div class="intro-panel__head">
+            <div class="section-index">ПЕРЕД СТАРТОМ <span>01 / 02</span></div>
+            <h2>Начинаем?</h2>
+            <p>Проверь две вещи — и можно идти.</p>
+          </div>
+
+          <div class="warning-box">
+            <span class="warning-box__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3 2.8 19h18.4L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
+            </span>
+            <p>Это служебный маршрут. Начни с фасада и не заходи через вход для гостей.</p>
+          </div>
+
+          <div class="checks" aria-label="Проверка перед началом">
+            <label class="check-card">
+              <input class="intro-check" type="checkbox">
+              <span class="check-card__box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg></span>
+              <span class="check-card__content"><strong>Я у фасада отеля</strong><span>Маршрут начинается снаружи, у здания COSMOS.</span></span>
+            </label>
+            <label class="check-card">
+              <input class="intro-check" type="checkbox">
+              <span class="check-card__box" aria-hidden="true"><svg viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg></span>
+              <span class="check-card__content"><strong>Иду на смену в ресторан</strong><span>Пункт назначения — «Шведская Линия».</span></span>
+            </label>
+          </div>
+
+          <div class="intro-bottom">
+            <div class="intro-actions">
+              <span class="status-pill" id="introStatus" aria-live="polite">Отмечено 0 из 2</span>
+              <button class="button button--primary button--start" id="startRouteButton" type="button" disabled>
+                <span>Открыть маршрут</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+              </button>
+            </div>
+            <div class="resume-card" id="resumeCard" hidden>
+              <span>СОХРАНЁННЫЙ МАРШРУТ</span><strong id="resumeText">Продолжить с шага 1</strong>
+            </div>
+            <button class="button button--text button--restart" id="startOverButton" type="button" hidden>Начать сначала</button>
+            <p class="intro-footnote"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v5c0 5.2 3.4 8.5 8 10 4.6-1.5 8-4.8 8-10V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>Фото и маршрут уже загружены на устройство</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen screen--nav" id="navScreen" aria-label="Пошаговый маршрут" aria-live="off">
+        <aside class="route-panel" aria-label="Шаги маршрута">
+          <div class="route-panel__head">
+            <div class="route-panel__title-row"><span class="route-panel__kicker">ТВОЙ МАРШРУТ</span><span class="route-panel__duration"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="routeEstimatedTimeAside">5–7 мин</span></span></div>
+            <h2>Путь до ресторана</h2>
+            <p>Космос Прибалтийская <span aria-hidden="true">·</span> 1 этаж</p>
+          </div>
+
+          <div class="progress-box">
+            <div class="progress-box__top"><span id="progressTitle">Шаг 1 из 10</span><strong id="progressPercent">10%</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Прогресс маршрута" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10">
+              <div class="progress-bar" id="progressBar" style="width: 10%"></div>
+            </div>
+          </div>
+
+          <nav class="timeline-wrap" aria-label="Перейти к шагу маршрута">
+            <div class="timeline" id="timeline"></div>
+          </nav>
+
+          <div class="route-footer">
+            <div class="contact-box">
+              <div class="contact-box__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 15.5v3a2 2 0 0 1-2.2 2A17.7 17.7 0 0 1 10 17.7a17.5 17.5 0 0 1-5.4-5.4A17.7 17.7 0 0 1 2.5 4.2 2 2 0 0 1 4.5 2h3A2 2 0 0 1 9.5 3.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.5 2.1L8.3 9.7a14 14 0 0 0 6 6l1.4-1.3a2 2 0 0 1 2.1-.5c.8.3 1.6.5 2.5.6a2 2 0 0 1 1.7 2Z"/></svg></div>
+              <div class="contact-box__content"><span id="supervisorLabel">Супервайзер</span><p id="supervisorNumbers">Внутренний номер 2753 или 2747</p></div>
+              <button class="copy-button" id="copySupervisorButton" type="button">Копировать</button>
+            </div>
+            <p class="route-panel__offline"><span aria-hidden="true"></span> Маршрут доступен офлайн</p>
+          </div>
+        </aside>
+
+        <div class="viewer">
+          <header class="viewer__header">
+            <div class="viewer__title">
+              <span id="viewerEyebrow">ШАГ 1 ИЗ 10</span>
+              <h2 id="viewerDestinationTitle">Ресторан Шведская Линия</h2>
+            </div>
+            <div class="viewer__header-actions">
+              <button class="help-trigger" id="helpTriggerButton" type="button" aria-expanded="false" aria-controls="helpPopover">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.4 1.6c-1 1-2 1.4-2 3m0 3h.01"/></svg>
+                <span>Нужна помощь?</span>
+              </button>
+              <div class="help-popover" id="helpPopover" role="region" aria-label="Помощь на маршруте" hidden>
+                <span class="help-popover__title">МЫ ПОМОЖЕМ</span>
+                <p class="help-popover__step" id="helpPopoverStep">Вы на шаге «Фасад».</p>
+                <p class="help-popover__hint" id="helpPopoverHint">Найдите центральный фасад отеля.</p>
+                <div class="help-popover__contact"><span>СУПЕРВАЙЗЕР</span><strong id="helpPopoverNumbers">2753 / 2747</strong></div>
+                <button class="button button--copy" id="copySupervisorButtonHelp" type="button">Скопировать номер</button>
+              </div>
+            </div>
+          </header>
+
+          <div class="mobile-progress" aria-label="Прогресс маршрута">
+            <div class="mobile-progress__top"><span id="mobileProgressTitle">Шаг 1 из 10</span><strong id="mobileProgressPercent">10%</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Прогресс маршрута" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><div class="progress-bar" id="mobileProgressBar" style="width: 10%"></div></div>
+          </div>
+
+          <div class="viewer__body">
+            <section class="stage" aria-label="Фото ориентира">
+              <div class="stage__frame">
+                <img id="stepImage" src="./assets/images/step-1-fasad-v2.jpg" alt="Фасад отеля" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Открыть фото ориентира">
+                <span class="stage__hint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg> Нажмите, чтобы увеличить</span>
+                <div class="stage__overlay" id="stageOverlay" aria-hidden="true"><strong id="titleBlock">ОРИЕНТИР</strong><span id="stepActionOverlay">Идите к входу для персонала.</span></div>
+              </div>
+              <p class="stage__caption"><span class="stage__caption-dot" aria-hidden="true"></span>Фотография ориентира на маршруте</p>
+            </section>
+
+            <section class="details" aria-label="Инструкция к шагу" aria-live="polite">
+              <div class="step-heading">
+                <span class="step-heading__label">СЕЙЧАС</span>
+                <h1 id="stepTitle">Подойдите к фасаду отеля</h1>
+              </div>
+              <p class="details__lead" id="stepDescription">Старт у фасада COSMOS.</p>
+              <p class="mobile-action-lead" id="mobileActionLead"></p>
+
+              <section class="box action-card" id="actionBox" aria-labelledby="actionTitle">
+                <div class="box__heading"><span class="action-card__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13m-5-5 5 5-5 5"/></svg></span><h2 id="actionTitle">ТВОЁ ДЕЙСТВИЕ</h2></div>
+                <p class="action-line" id="stepAction">Идите к входу для персонала.</p>
+              </section>
+
+              <section class="box script-box" id="scriptBox" aria-labelledby="scriptTitle" hidden>
+                <div class="box__heading"><span class="script-box__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8m-8 3h5"/></svg></span><h2 id="scriptTitle">ЧТО СКАЗАТЬ</h2></div>
+                <p id="stepScript"></p>
+              </section>
+
+              <section class="box details-box" id="detailsBox" aria-labelledby="detailsTitle">
+                <div class="box__heading"><span class="details-box__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/><circle cx="3" cy="6" r=".5"/><circle cx="3" cy="12" r=".5"/><circle cx="3" cy="18" r=".5"/></svg></span><h2 id="detailsTitle">ПОЛЕЗНО ЗНАТЬ</h2></div>
+                <ul class="bullet-list" id="stepDetails"><li>Ориентир: центральный фасад COSMOS.</li><li>Не заходите через вход для гостей.</li></ul>
+              </section>
+
+              <section class="finish-note" id="finishNote" aria-live="polite" hidden>
+                <div class="finish-note__confetti" id="finishConfetti" aria-hidden="true"></div>
+                <span class="finish-note__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+                <div><strong>Ты на месте!</strong><p>Добро пожаловать в «Шведскую Линию». Хорошей смены.</p></div>
+              </section>
+            </section>
+          </div>
+
+          <footer class="viewer__footer">
+            <span class="footer-progress" id="footerProgress">Шаг 1 из 10</span>
+            <div class="viewer-actions">
+              <button class="button button--secondary" id="prevButton" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg><span>Назад</span></button>
+              <button class="button button--text" id="restartButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg><span>С начала</span></button>
+              <button class="button button--primary button--next" id="nextButton" type="button"><span>Далее</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="imageModal" aria-hidden="true" hidden>
+      <div class="modal__dialog" role="dialog" aria-modal="true" aria-label="Фото ориентира крупно">
+        <button class="modal__close" id="closeModalButton" type="button" aria-label="Закрыть увеличенное фото"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+        <img id="modalImage" src="" alt="">
+      </div>
+    </div>
+  </body>
+</html>
