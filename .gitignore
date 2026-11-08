@@ -1,2 +1,10 @@
 .DS_Store
 **/.DS_Store
+
+# Служебные папки
+output/
+tmp/
+
+# Старые версии фотографий (используются только *-v2.jpg)
+assets/images/*.jpg
+!assets/images/*-v2.jpg
