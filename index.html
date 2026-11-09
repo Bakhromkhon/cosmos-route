@@ -16,9 +16,11 @@
     <link rel="preload" href="./assets/brand/cosmos-inverse.svg" as="image" type="image/svg+xml">
     <link rel="preload" href="./assets/fonts/manrope-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="./assets/fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- Стили приложения: грузятся параллельно и не блокируют старт заставки -->
+    <link rel="stylesheet" href="./css/app.css?v=8" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="./css/app.css?v=8"></noscript>
     <!-- Фирменная заставка целиком в критическом CSS: анимация
-         стартует с первого кадра, ещё до загрузки app.css и JS -->
-    <link rel="stylesheet" href="./css/app.css?v=8">
+         стартует с первого кадра, ещё до загрузки внешних файлов -->
     <style>
       html { background: #006068; }
 :root{--ct-deep:#003e43;--ct-base:#006068;--ct-brand:#00a4b4;--ct-mist:#d7f1f0;--ct-white:#fff;--ct-soft:#8dd9dc;--ct-ease:cubic-bezier(.16,1,.3,1)}

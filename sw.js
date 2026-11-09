@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v70';
+const CACHE_VERSION = 'green-route-v71';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const MEDIA_CACHE = `${CACHE_VERSION}-media`;
