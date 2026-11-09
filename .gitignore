@@ -10,3 +10,7 @@ assets/images/*.jpg
 !assets/images/*-v2.jpg
 # Пакет ElevenLabs (источник аудио, дублируется в assets/audio/)
 COSMOS_GUIDE_ELEVENLABS_PATCH/
+
+# Прототипы и исходники брендбука (не деплоятся)
+COSMOS_SIGNATURE_ARRIVAL_DEMO/
+исходники/

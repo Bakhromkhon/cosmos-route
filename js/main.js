@@ -75,11 +75,23 @@ const routeDestinationName = document.getElementById("routeDestinationName");
 const routeEstimatedTime = document.getElementById("routeEstimatedTime");
 const stepCountStat = document.getElementById("stepCountStat");
 const splash = document.getElementById("splash");
-const SPLASH_MIN_MS = 950;
+const SPLASH_KEY = "cosmos-splash-seen";
+const isRepeatLaunch = (() => {
+  try { return sessionStorage.getItem(SPLASH_KEY) === "1"; } catch (error) { return false; }
+})();
+const SPLASH_MIN_MS = isRepeatLaunch ? 750 : 2000;
 const bootStartedAt = Date.now();
 let splashHidden = false;
 
-// Прячет стартовый сплэш: не раньше SPLASH_MIN_MS, чтобы анимация бренда успела проиграться.
+// Запускает фирменную анимацию заставки (в повторном запуске — укороченную).
+function startSplash() {
+  if (!splash) return;
+  splash.classList.add(isRepeatLaunch ? "is-quick" : "is-playing");
+  try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch (error) { /* приватный режим */ }
+}
+startSplash();
+
+// Прячет стартовый сплэш: не раньше минимальной длительности, чтобы анимация успела проиграться.
 function hideSplash() {
   if (splashHidden) return;
   splashHidden = true;

@@ -3,28 +3,40 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0b1935">
+    <meta name="theme-color" content="#006068">
     <meta name="description" content="Пошаговый офлайн-маршрут до ресторана «Шведская Линия» в отеле Космос Прибалтийская.">
     <meta name="color-scheme" content="light">
     <title>Маршрут до ресторана · COSMOS</title>
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <link rel="manifest" href="./manifest.webmanifest.json">
-    <link rel="preload" href="./assets/fonts/playfair-display-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./assets/fonts/manrope-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="./assets/fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="./css/app.css?v=4">
+    <link rel="stylesheet" href="./css/app.css?v=5">
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/main.js?v=54" defer></script>
+    <script src="./js/main.js?v=55" defer></script>
   </head>
   <body>
-    <div class="splash" id="splash" aria-hidden="true">
-      <div class="splash__inner">
-        <span class="splash__mark">
-          <svg viewBox="0 0 32 32"><path d="M16 27s9-8.2 9-15a9 9 0 1 0-18 0c0 6.8 9 15 9 15Z"/><circle cx="16" cy="12" r="3"/></svg>
-        </span>
-        <span class="splash__word">COSMOS</span>
-        <span class="splash__sub">STAFF ROUTE</span>
-        <span class="splash__bar"><i></i></span>
+    <div class="splash mode-brand" id="splash" aria-hidden="true">
+      <div class="splash__glow"></div>
+      <svg class="splash__orbit" viewBox="0 0 500 480" aria-hidden="true"><ellipse cx="250" cy="240" rx="220" ry="85"/><ellipse cx="250" cy="240" rx="190" ry="53"/></svg>
+      <div class="splash__grain"></div>
+      <div class="splash__stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+      <div class="splash__brand">
+        <img class="splash__logo" src="./assets/brand/cosmos-inverse.svg" alt="COSMOS Санкт-Петербург Прибалтийская">
+        <div class="splash__label">НАВИГАЦИЯ ДЛЯ СОТРУДНИКОВ</div>
+      </div>
+
+      <svg class="splash__journey" viewBox="0 0 290 83" aria-hidden="true">
+        <path d="M14 63 H62 C83 63 83 20 111 20 H161 C189 20 185 63 215 63 H253"/>
+      </svg>
+      <div class="splash__marker" aria-hidden="true"></div>
+
+      <div class="splash__bottom">
+        <p>ВАШ МАРШРУТ НАЧИНАЕТСЯ ЗДЕСЬ</p>
+        <div class="splash__track"><span></span></div>
+        <div class="splash__foot">COSMOS · САНКТ-ПЕТЕРБУРГ · ПРИБАЛТИЙСКАЯ</div>
       </div>
     </div>
     <div class="status-stack" aria-label="Статус приложения">
@@ -54,10 +66,7 @@
 
     <header class="app-header">
       <a class="brand" href="./" aria-label="COSMOS — маршрут для персонала">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32"><path d="M16 27s9-8.2 9-15a9 9 0 1 0-18 0c0 6.8 9 15 9 15Z"/><circle cx="16" cy="12" r="3"/></svg>
-        </span>
-        <span class="brand__wordmark"><strong>COSMOS</strong><span>STAFF ROUTE</span></span>
+        <img class="brand__logo" src="./assets/brand/cosmos-color.svg" alt="COSMOS Санкт-Петербург Прибалтийская">
       </a>
       <div class="app-header__meta">
         <span class="app-header__status-dot" aria-hidden="true"></span>
