@@ -14,3 +14,6 @@ COSMOS_GUIDE_ELEVENLABS_PATCH/
 # Прототипы и исходники брендбука (не деплоятся)
 COSMOS_SIGNATURE_ARRIVAL_DEMO/
 исходники/
+
+# Пакеты-прототипы (исходники анимаций, не деплоятся)
+COSMOS_THRESHOLD_5_SECONDS/
