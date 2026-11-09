@@ -349,7 +349,7 @@ function moveToStep(offset) {
 
 function openModal() {
   modalReturnFocus = document.activeElement;
-  modalImage.src = stepImage.src;
+  modalImage.src = stepImage.currentSrc || stepImage.src;
   modalImage.alt = stepImage.alt;
   imageModal.hidden = false;
   imageModal.setAttribute("aria-hidden", "false");
