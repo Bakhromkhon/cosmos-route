@@ -408,7 +408,7 @@ async function installApp() {
 
 function handleWaitingServiceWorker(worker) {
   waitingWorker = worker;
-  showUpdateBanner("Доступна новая версия маршрута. Обновите приложение.");
+  showUpdateBanner("Доступна новая версия маршрута. Нажмите «Обновить».");
 }
 
 async function applyAppUpdate() {
@@ -464,6 +464,18 @@ async function registerServiceWorker() {
         }
       });
     });
+
+    // Проверяем обновления, когда пользователь возвращается в приложение:
+    // иначе старая сборка из кеша живёт до перезапуска браузера.
+    let lastUpdateCheck = Date.now();
+    const checkForUpdate = () => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() - lastUpdateCheck < 60000) return;
+      lastUpdateCheck = Date.now();
+      registration.update().catch(() => {});
+    };
+    document.addEventListener("visibilitychange", checkForUpdate);
+    window.addEventListener("focus", checkForUpdate);
   } catch (error) {
     console.warn("SW registration failed:", error);
   }
