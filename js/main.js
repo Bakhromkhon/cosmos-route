@@ -418,6 +418,24 @@ async function applyAppUpdate() {
   window.location.reload();
 }
 
+function requestBackgroundWarmUp() {
+  if (!("serviceWorker" in navigator)) return;
+  const send = () => {
+    navigator.serviceWorker.ready
+      .then(registration => {
+        const worker = registration.active || navigator.serviceWorker.controller;
+        if (worker) worker.postMessage({ type: "WARM_UP" });
+      })
+      .catch(() => {});
+  };
+  // Фоновая догрузка фото и аудио — только когда страница простаивает.
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(send, { timeout: 4000 });
+  } else {
+    setTimeout(send, 2500);
+  }
+}
+
 async function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   // По file:// service worker зарегистрировать нельзя — тихо пропускаем.
@@ -638,6 +656,7 @@ async function boot() {
     updateIntroState();
     updateNetworkState();
     registerServiceWorker();
+    requestBackgroundWarmUp();
     hideSplash();
     hideUpdateBanner();
   } catch (error) {

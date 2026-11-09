@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v59';
+const CACHE_VERSION = 'green-route-v60';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const MEDIA_CACHE = `${CACHE_VERSION}-media`;
@@ -9,7 +9,7 @@ const SHELL_ASSETS = [
   './index.html',
   './manifest.webmanifest.json',
   './css/app.css?v=6',
-  './js/main.js?v=57',
+  './js/main.js?v=58',
   './data/route.js?v=1',
   './data/route.json',
   './icons/icon.svg',
@@ -77,12 +77,23 @@ self.addEventListener('activate', (event) => {
       .map(key => caches.delete(key))
     );
     await self.clients.claim();
-    await warmUp(SHELL_CACHE, DEFERRED_ASSETS);
   })());
 });
 
+let warmUpStarted = false;
+
+// Догрузка медиа запускается со страницы, когда та простаивает,
+// чтобы не конкурировать с первой загрузкой приложения.
+async function startWarmUp() {
+  if (warmUpStarted) return;
+  warmUpStarted = true;
+  await warmUp(SHELL_CACHE, DEFERRED_ASSETS);
+}
+
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (event.data.type === 'WARM_UP') startWarmUp();
 });
 
 self.addEventListener('fetch', (event) => {
