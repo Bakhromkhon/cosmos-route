@@ -80,14 +80,16 @@ const SPLASH_KEY = "cosmos-splash-seen";
 const isRepeatLaunch = (() => {
   try { return sessionStorage.getItem(SPLASH_KEY) === "1"; } catch (error) { return false; }
 })();
-const SPLASH_MIN_MS = isRepeatLaunch ? 700 : 2900;
+const SPLASH_MIN_MS = isRepeatLaunch ? 1700 : 2900;
 const bootStartedAt = Date.now();
 let splashHidden = false;
 
 // Запускает фирменную анимацию заставки (в повторном запуске — укороченную).
 function startSplash() {
   if (!splash) return;
-  splash.classList.add(isRepeatLaunch ? "is-quick" : "is-playing");
+  // is-playing включает саму анимацию, is-quick — ускоренный тайминг для повторного запуска.
+  splash.classList.add("is-playing");
+  if (isRepeatLaunch) splash.classList.add("is-quick");
   try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch (error) { /* приватный режим */ }
 }
 startSplash();
@@ -101,7 +103,7 @@ function hideSplash() {
     document.body.classList.add("is-ready");
     if (!splash) return;
     splash.classList.add("is-done");
-    setTimeout(() => splash.remove(), isRepeatLaunch ? 380 : 700);
+    setTimeout(() => splash.remove(), isRepeatLaunch ? 450 : 700);
   }, wait);
 }
 const supervisorLabel = document.getElementById("supervisorLabel");
