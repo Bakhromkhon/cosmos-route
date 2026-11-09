@@ -75,69 +75,10 @@ const objectEyebrow = document.getElementById("objectEyebrow");
 const routeDestinationName = document.getElementById("routeDestinationName");
 const routeEstimatedTime = document.getElementById("routeEstimatedTime");
 const stepCountStat = document.getElementById("stepCountStat");
-const splash = document.getElementById("splash");
 const SPLASH_KEY = "cosmos-splash-seen";
 const isRepeatLaunch = (() => {
   try { return sessionStorage.getItem(SPLASH_KEY) === "1"; } catch (error) { return false; }
 })();
-const SPLASH_MIN_MS = isRepeatLaunch ? 1700 : 2900;
-const bootStartedAt = Date.now();
-let splashHidden = false;
-
-// Запускает фирменную анимацию заставки (в повторном запуске — укороченную).
-let markerRaf = 0;
-
-// Маркер едет ровно по кончику нарисованной линии: прогресс берём
-// из stroke-dashoffset, поэтому рассинхронизация с линией невозможна.
-function syncRouteMarker() {
-  cancelAnimationFrame(markerRaf);
-  const journey = splash ? splash.querySelector(".splash__journey") : null;
-  const path = journey ? journey.querySelector(".splash__route") : null;
-  const marker = journey ? journey.querySelector(".splash__motion") : null;
-  if (!path || !marker) return;
-
-  let total = 0;
-  try { total = path.getTotalLength(); } catch (error) { total = 0; }
-  if (!total) return;
-  path.style.setProperty("--route-len", String(total));
-
-  const tick = () => {
-    if (!path.isConnected) { markerRaf = 0; return; }
-    const offset = Math.abs(parseFloat(getComputedStyle(path).strokeDashoffset) || 0);
-    const progress = Math.max(0, Math.min(1, (total - offset) / total));
-    if (progress > 0.002) {
-      const point = path.getPointAtLength(total * progress);
-      marker.setAttribute("transform", "translate(" + point.x + " " + point.y + ")");
-      marker.setAttribute("opacity", "1");
-    }
-    if (progress >= 0.999) { markerRaf = 0; return; }
-    markerRaf = requestAnimationFrame(tick);
-  };
-  markerRaf = requestAnimationFrame(tick);
-}
-
-function startSplash() {
-  if (!splash) return;
-  syncRouteMarker();
-  // is-playing включает саму анимацию, is-quick — ускоренный тайминг для повторного запуска.
-  splash.classList.add("is-playing");
-  if (isRepeatLaunch) splash.classList.add("is-quick");
-  try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch (error) { /* приватный режим */ }
-}
-startSplash();
-
-// Прячет стартовый сплэш: не раньше минимальной длительности, чтобы анимация успела проиграться.
-function hideSplash() {
-  if (splashHidden) return;
-  splashHidden = true;
-  const wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - bootStartedAt));
-  setTimeout(() => {
-    document.body.classList.add("is-ready");
-    if (!splash) return;
-    splash.classList.add("is-done");
-    setTimeout(() => splash.remove(), isRepeatLaunch ? 450 : 700);
-  }, wait);
-}
 const supervisorLabel = document.getElementById("supervisorLabel");
 const supervisorNumbers = document.getElementById("supervisorNumbers");
 const helpPopoverNumbers = document.getElementById("helpPopoverNumbers");
@@ -703,13 +644,37 @@ async function boot() {
     updateNetworkState();
     registerServiceWorker();
     requestBackgroundWarmUp();
-    hideSplash();
     hideUpdateBanner();
+    // Интерфейс отрисован под заставкой до портального перехода.
+    document.body.classList.add("is-ready");
+    return true;
   } catch (error) {
     console.warn("[main] Failed to boot:", error, error && error.stack ? String(error.stack).split("\n").slice(0,6).join(" | ") : "");
     showBootError();
-    hideSplash();
+    document.body.classList.add("is-ready");
+    return false;
   }
+}
+
+// Заставка COSMOS THRESHOLD: пять секунд на первый запуск, короткая версия на повторный.
+// Контроллер ждёт реальную готовность приложения и не скрывает заставку раньше времени.
+function startThreshold(readyPromise) {
+  const stage = document.getElementById("cosmosSplash");
+  const factory = window.CosmosThreshold;
+  try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch (error) { /* приватный режим */ }
+
+  // Если контроллер не загрузился — приложение просто открывается без заставки.
+  if (!stage || !factory || typeof factory.create !== "function") {
+    if (stage) stage.style.display = "none";
+    return;
+  }
+
+  const threshold = factory.create({ stage });
+  threshold.play({
+    repeat: isRepeatLaunch,
+    ready: readyPromise,
+    onFinish: () => document.body.classList.add("is-ready")
+  });
 }
 
 function showBootError() {
@@ -888,4 +853,5 @@ function initGuideControls() {
   setGuideAudioState();
 }
 
-boot();
+// Готовность приложения — реальный сигнал для заставки, а не таймер.
+startThreshold(boot());
