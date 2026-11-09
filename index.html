@@ -25,9 +25,9 @@
       html { background: #006068; }
 :root{--ct-deep:#003e43;--ct-base:#006068;--ct-brand:#00a4b4;--ct-mist:#d7f1f0;--ct-white:#fff;--ct-soft:#8dd9dc;--ct-ease:cubic-bezier(.16,1,.3,1)}
 .ct-scene{position:fixed;z-index:300;inset:0;isolation:isolate;overflow:hidden;display:block;background:linear-gradient(150deg,#00484e 2%,#006068 53%,#003b43 100%);color:white;will-change:clip-path,opacity;--ct-duration:4100ms}
-.ct-scene::before{content:'';position:absolute;inset:-25%;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 48% 45%,rgba(35,198,210,.25),transparent 41%),radial-gradient(ellipse at 84% 9%,rgba(130,244,237,.11),transparent 30%),radial-gradient(ellipse at 12% 92%,rgba(0,22,30,.70),transparent 45%)}
-.ct-scene::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;opacity:.18;background-image:linear-gradient(to right,rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px);background-size:67px 67px;mask-image:linear-gradient(to bottom,transparent,black 28%,black 83%,transparent)}
-.ct-scene__architecture{position:absolute;z-index:1;inset:-5%;perspective:850px;overflow:hidden;pointer-events:none;filter:drop-shadow(0 0 14px rgba(0,185,194,.13))}
+.ct-scene::before{content:'';position:absolute;inset:-25%;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 48% 45%,rgba(35,198,210,.17),transparent 41%),radial-gradient(ellipse at 84% 9%,rgba(130,244,237,.07),transparent 30%),radial-gradient(ellipse at 12% 92%,rgba(0,22,30,.70),transparent 45%)}
+.ct-scene::after{content:'';position:absolute;inset:0;z-index:6;pointer-events:none;opacity:.10;background-image:linear-gradient(to right,rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.09) 1px,transparent 1px);background-size:67px 67px;mask-image:linear-gradient(to bottom,transparent,black 28%,black 83%,transparent)}
+.ct-scene__architecture{position:absolute;z-index:1;inset:-5%;perspective:850px;overflow:hidden;pointer-events:none;filter:drop-shadow(0 0 14px rgba(0,185,194,.08))}
 .ct-scene__architecture i{position:absolute;display:block;left:50%;top:48%;width:68%;height:68%;border:1px solid rgba(206,255,255,.24);border-radius:13px;transform:translate(-50%,-50%) perspective(650px) rotateY(0deg) scale(.7);opacity:0}
 .ct-scene__architecture i:nth-child(2){width:83%;height:81%;border-color:rgba(205,255,255,.17)}
 .ct-scene__architecture i:nth-child(3){width:99%;height:96%;border-color:rgba(212,255,255,.115)}
@@ -36,7 +36,7 @@
 .ct-scene__edge{position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,32,41,.54) 0,transparent 19%,transparent 81%,rgba(0,22,26,.50) 100%)}
 .ct-scene__microtop{position:absolute;z-index:3;left:26px;right:26px;top:43px;display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:.22em;font-weight:700;color:rgba(232,255,255,.6);opacity:0;transform:translateY(-8px)}
 .ct-scene__microtop i{width:29px;height:1px;background:#7fced2;opacity:.8}
-.ct-scene__halo{position:absolute;left:50%;top:45%;z-index:1;width:min(108%,455px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(57,196,201,.26) 0,rgba(46,180,186,.08) 27%,transparent 67%);opacity:0;pointer-events:none}
+.ct-scene__halo{position:absolute;left:50%;top:45%;z-index:1;width:min(108%,455px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(57,196,201,.20) 0,rgba(46,180,186,.06) 27%,transparent 67%);opacity:0;pointer-events:none}
 .ct-scene__brand{position:absolute;z-index:4;left:50%;top:41%;width:min(92%,405px);display:grid;justify-items:center;gap:20px;transform:translate(-50%,-50%)}
 .ct-scene__logo{display:block;width:100%;height:auto;aspect-ratio:598/297;object-fit:contain;transform:translateY(14px) scale(.96);opacity:0;clip-path:inset(0 100% 0 0)}
 .ct-scene__brand-rule{width:min(100px,30%);height:1px;background:linear-gradient(90deg,transparent,#9de7e8,transparent);transform:scaleX(0);opacity:0}
@@ -61,45 +61,46 @@
 .ct-scene.is-leaving .ct-scene__flash{animation:ct-exit-flare 640ms ease-out both}
 @keyframes ct-door-reveal{0%{clip-path:inset(0 0% 0 0%);opacity:1}60%{clip-path:inset(0 22% 0 22%);opacity:1}100%{clip-path:inset(0 50% 0 50%);opacity:0}}
 @keyframes ct-exit-flare{0%{opacity:0;transform:scale(.35)}45%{opacity:.55;transform:scale(1)}100%{opacity:0;transform:scale(2)}}
-.ct-scene.is-playing .ct-scene__architecture i{animation:ct-architecture 4100ms var(--ct-ease) both}
-.ct-scene.is-playing .ct-scene__architecture i:nth-child(1){animation-delay:0ms}
-.ct-scene.is-playing .ct-scene__architecture i:nth-child(2){animation-delay:140ms}
-.ct-scene.is-playing .ct-scene__architecture i:nth-child(3){animation-delay:280ms}
-.ct-scene.is-playing .ct-scene__architecture i:nth-child(4){animation-delay:420ms}
-.ct-scene.is-playing .ct-scene__halo{animation:ct-halo 4100ms ease-in-out both}
-.ct-scene.is-playing .ct-scene__beam{animation:ct-beam 3750ms cubic-bezier(.18,.42,.55,1) .38s both}
-.ct-scene.is-playing .ct-scene__microtop{animation:ct-fade-in 700ms ease .29s both}
-.ct-scene.is-playing .ct-scene__logo{animation:ct-logo-reveal 1580ms var(--ct-ease) .36s both}
-.ct-scene.is-playing .ct-scene__brand-rule{animation:ct-line 780ms var(--ct-ease) 1.26s both}
-.ct-scene.is-playing .ct-scene__brand-label{animation:ct-pop 650ms var(--ct-ease) 1.68s both}
-.ct-scene.is-playing .ct-scene__head span{animation:ct-pop 650ms var(--ct-ease) 2.04s both}
-.ct-scene.is-playing .ct-scene__head b{animation:ct-pop 840ms var(--ct-ease) 2.32s both}
-.ct-scene.is-playing .ct-scene__nav-top{animation:ct-pop 590ms var(--ct-ease) 2.58s both}
-.ct-scene.is-playing .ct-scene__nav-node{animation:ct-nodes 290ms ease-out 2.78s both}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(3){animation-delay:2.91s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(4){animation-delay:3.04s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(5){animation-delay:3.17s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(6){animation-delay:3.30s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(7){animation-delay:3.43s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(8){animation-delay:3.56s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(9){animation-delay:3.69s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(10){animation-delay:3.82s}
-.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(11){animation-delay:3.95s}
-.ct-scene.is-playing .ct-scene__nav-fill{animation:ct-travel 1270ms cubic-bezier(.38,0,.2,1) 2.82s both}
-.ct-scene.is-playing .ct-scene__nav-traveller{animation:ct-pin 1270ms cubic-bezier(.38,0,.2,1) 2.82s both}
-.ct-scene.is-playing .ct-scene__bottom-line i{animation:ct-fill 3920ms cubic-bezier(.18,.28,.28,1) .12s both}
-@keyframes ct-architecture{0%{opacity:0;transform:translate(-50%,-50%) perspective(650px) scale(.75)}24%{opacity:.8}74%{opacity:.7}100%{opacity:0;transform:translate(-50%,-50%) perspective(650px) scale(1.13)}}
-@keyframes ct-halo{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}32%{opacity:.8}80%{opacity:.7}100%{opacity:.4;transform:translate(-50%,-50%) scale(1.1)}}
-@keyframes ct-beam{0%{opacity:0;transform:translateX(-145%) rotate(19deg)}35%{opacity:.9}78%{opacity:.7}100%{opacity:0;transform:translateX(270%) rotate(19deg)}}
-@keyframes ct-logo-reveal{0%{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(14px) scale(.96)}30%{opacity:1}85%{clip-path:inset(0 0 0 0)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+/* One director's-cut flow: light opens the brand → a single beam hands off to
+   the route line → one marker crosses the ten hubs, each lighting as it passes →
+   a ~350ms breath on the final hub → the portal reveals the real route view.
+   4.1s first act + 0.24s verified readiness + 0.66s reveal = 5.0s total.
+   Effect layers were reduced so only one action leads the eye at any moment. */
+.ct-scene.is-playing .ct-scene__architecture i{animation:ct-architecture 3600ms var(--ct-ease) both;animation-delay:0ms}
+.ct-scene.is-playing .ct-scene__halo{animation:ct-halo 3600ms ease-in-out .08s both}
+.ct-scene.is-playing .ct-scene__beam{animation:ct-beam 750ms cubic-bezier(.55,.06,.2,1) 1.6s both}
+.ct-scene.is-playing .ct-scene__microtop{animation:ct-fade-in 620ms ease .34s both}
+.ct-scene.is-playing .ct-scene__logo{animation:ct-logo-reveal 1150ms var(--ct-ease) .45s both}
+.ct-scene.is-playing .ct-scene__brand-rule{animation:ct-line 560ms var(--ct-ease) 1.5s both}
+.ct-scene.is-playing .ct-scene__brand-label{animation:ct-pop 620ms var(--ct-ease) 1.86s both}
+.ct-scene.is-playing .ct-scene__nav-top{animation:ct-pop 560ms var(--ct-ease) 2.46s both}
+.ct-scene.is-playing .ct-scene__head span{animation:ct-pop 600ms var(--ct-ease) 2.42s both}
+.ct-scene.is-playing .ct-scene__head b{animation:ct-pop 760ms var(--ct-ease) 2.55s both}
+.ct-scene.is-playing .ct-scene__nav-node{animation:ct-nodes 260ms cubic-bezier(.4,.15,.6,.85) 2.35s both}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(3){animation-delay:2.431s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(4){animation-delay:2.560s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(5){animation-delay:2.734s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(6){animation-delay:2.940s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(7){animation-delay:3.160s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(8){animation-delay:3.366s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(9){animation-delay:3.540s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(10){animation-delay:3.669s}
+.ct-scene.is-playing .ct-scene__nav-node:nth-of-type(11){animation-delay:3.750s}
+.ct-scene.is-playing .ct-scene__nav-fill{animation:ct-travel 1400ms cubic-bezier(.4,.15,.6,.85) 2.35s both}
+.ct-scene.is-playing .ct-scene__nav-traveller{animation:ct-pin 1400ms cubic-bezier(.4,.15,.6,.85) 2.35s both}
+.ct-scene.is-playing .ct-scene__bottom-line i{animation:ct-fill 3800ms cubic-bezier(.32,.26,.22,1) .45s both}
+@keyframes ct-architecture{0%{opacity:0;transform:translate(-50%,-50%) perspective(650px) scale(.86)}20%{opacity:.6}74%{opacity:.5}100%{opacity:0;transform:translate(-50%,-50%) perspective(650px) scale(1.06)}}
+@keyframes ct-halo{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}30%{opacity:.62}78%{opacity:.5}100%{opacity:.26;transform:translate(-50%,-50%) scale(1.06)}}
+@keyframes ct-beam{0%{opacity:0;transform:translateX(-120%) rotate(19deg)}26%{opacity:.85}74%{opacity:.68}100%{opacity:0;transform:translateX(140%) rotate(19deg)}}
+@keyframes ct-logo-reveal{0%{opacity:0;clip-path:inset(0 100% 0 0);transform:translateY(10px) scale(.97)}26%{opacity:1}84%{clip-path:inset(0 0 0 0)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
 @keyframes ct-line{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
-@keyframes ct-pop{from{opacity:0;transform:translateY(12px);filter:blur(6px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes ct-pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes ct-fade-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-@keyframes ct-nodes{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes ct-nodes{from{opacity:0;transform:scale(.35)}to{opacity:1;transform:scale(1)}}
 @keyframes ct-travel{from{width:0}to{width:100%}}
-@keyframes ct-pin{0%{opacity:0;left:0}7%{opacity:1}85%{opacity:1}100%{left:100%;opacity:1}}
-@keyframes ct-fill{from{width:0}to{width:94%}}
-@keyframes ct-fill-quick{from{width:0}to{width:94%}}
+@keyframes ct-pin{0%{opacity:0;left:0}6%{opacity:1}94%{opacity:1}100%{left:100%;opacity:1}}
+@keyframes ct-fill{from{width:0}to{width:92%}}
+@keyframes ct-fill-quick{from{width:0}to{width:92%}}
 .ct-scene__bottom-line i{transition:width 240ms cubic-bezier(.22,1,.36,1)}
 .ct-scene.is-complete .ct-scene__bottom-line i{animation:none!important;width:100%}
 .ct-scene.is-complete .ct-scene__bottom-copy span:last-child{color:#d1ffff}
@@ -109,7 +110,7 @@
 .ct-scene.is-quick .ct-scene__brand-label{opacity:1;transform:none}
 .ct-scene.is-quick .ct-scene__brand-rule{opacity:1;transform:scaleX(1)}
 .ct-scene.is-quick .ct-scene__bottom-line i{animation:ct-fill-quick 690ms ease-out both}
-@keyframes ct-quick-logo{from{opacity:0;transform:scale(.93);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes ct-quick-logo{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
 @keyframes ct-quick-halo{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:.7;transform:translate(-50%,-50%) scale(1)}}
 .ct-scene.is-reduced .ct-scene__logo,.ct-scene.is-reduced .ct-scene__brand-label,.ct-scene.is-reduced .ct-scene__nav-top{opacity:1;clip-path:none;transform:none;animation:none!important}
 .ct-scene.is-reduced .ct-scene__brand-rule{opacity:1;transform:none}
