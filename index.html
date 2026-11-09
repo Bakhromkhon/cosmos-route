@@ -121,8 +121,7 @@
 @keyframes ct-arrive-caption{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
     </style>
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/threshold.js?v=1" defer></script>
-    <script src="./js/main.js?v=64" defer></script>
+    <script src="./js/main.js?v=65" defer></script>
   </head>
   <body>
     <section id="cosmosSplash" class="ct-scene" aria-label="COSMOS — запуск маршрута" aria-live="off">
@@ -147,6 +146,42 @@
       </div>
       <div class="ct-scene__flash" aria-hidden="true"></div>
     </section>
+
+    <!-- Заставка запускается сразу при разборе страницы, не дожидаясь main.js.
+         Готовность приложения приходит позже через window.__cosmosReady. -->
+    <script src="./js/threshold.js?v=1"></script>
+    <script>
+      (function () {
+        var stage = document.getElementById("cosmosSplash");
+        var factory = window.CosmosThreshold;
+        var resolved = false;
+        var resolveReady = null;
+        window.__cosmosReady = new Promise(function (resolve) { resolveReady = resolve; });
+        window.__cosmosReady.resolve = function (value) {
+          if (resolved) return;
+          resolved = true;
+          resolveReady(Boolean(value));
+        };
+        var repeat = false;
+        try {
+          repeat = sessionStorage.getItem("cosmos-splash-seen") === "1";
+          sessionStorage.setItem("cosmos-splash-seen", "1");
+        } catch (error) { /* приватный режим */ }
+
+        if (stage && factory && typeof factory.create === "function") {
+          var threshold = factory.create({ stage: stage });
+          threshold.play({
+            repeat: repeat,
+            ready: window.__cosmosReady,
+            onFinish: function () { document.body.classList.add("is-ready"); }
+          });
+          // Страховка: если приложение не сообщило готовность, заставка всё равно уходит.
+          setTimeout(function () { window.__cosmosReady.resolve(false); }, 12000);
+        } else {
+          document.body.classList.add("is-ready");
+        }
+      })();
+    </script>
     <div class="status-stack" aria-label="Статус приложения">
       <div class="status-banner status-banner--offline" id="networkBanner" role="status" aria-live="polite" hidden>
         <span class="status-banner__icon" aria-hidden="true">

@@ -656,26 +656,10 @@ async function boot() {
   }
 }
 
-// Заставка COSMOS THRESHOLD: пять секунд на первый запуск, короткая версия на повторный.
-// Контроллер ждёт реальную готовность приложения и не скрывает заставку раньше времени.
-function startThreshold(readyPromise) {
-  const stage = document.getElementById("cosmosSplash");
-  const factory = window.CosmosThreshold;
-  try { sessionStorage.setItem(SPLASH_KEY, "1"); } catch (error) { /* приватный режим */ }
+// Заставка запускается inline-загрузчиком сразу после разметки в index.html:
+// он стартует анимацию, не дожидаясь загрузки main.js, и получает готовность
+// приложения через window.__cosmosReady.
 
-  // Если контроллер не загрузился — приложение просто открывается без заставки.
-  if (!stage || !factory || typeof factory.create !== "function") {
-    if (stage) stage.style.display = "none";
-    return;
-  }
-
-  const threshold = factory.create({ stage });
-  threshold.play({
-    repeat: isRepeatLaunch,
-    ready: readyPromise,
-    onFinish: () => document.body.classList.add("is-ready")
-  });
-}
 
 function showBootError() {
   introScreen.classList.add("is-active");
@@ -853,5 +837,10 @@ function initGuideControls() {
   setGuideAudioState();
 }
 
-// Готовность приложения — реальный сигнал для заставки, а не таймер.
-startThreshold(boot());
+// Сообщаем заставке реальную готовность приложения (без таймеров и повторного boot()).
+const appBoot = boot();
+if (window.__cosmosReady && typeof window.__cosmosReady.resolve === "function") {
+  appBoot.then(ok => window.__cosmosReady.resolve(ok));
+} else {
+  appBoot.then(() => document.body.classList.add("is-ready"));
+}
