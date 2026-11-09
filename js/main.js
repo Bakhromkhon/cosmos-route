@@ -87,6 +87,12 @@ let splashHidden = false;
 // Запускает фирменную анимацию заставки (в повторном запуске — укороченную).
 function startSplash() {
   if (!splash) return;
+  // SMIL-анимация маркера живёт по собственной шкале времени —
+  // выравниваем её со стартом заставки, иначе на медленной сети маркер отстаёт.
+  const journey = splash.querySelector(".splash__journey");
+  if (journey && typeof journey.setCurrentTime === "function") {
+    try { journey.setCurrentTime(0); } catch (error) { /* SMIL недоступен */ }
+  }
   // is-playing включает саму анимацию, is-quick — ускоренный тайминг для повторного запуска.
   splash.classList.add("is-playing");
   if (isRepeatLaunch) splash.classList.add("is-quick");

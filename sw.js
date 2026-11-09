@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v65';
+const CACHE_VERSION = 'green-route-v66';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const MEDIA_CACHE = `${CACHE_VERSION}-media`;
@@ -9,7 +9,7 @@ const SHELL_ASSETS = [
   './index.html',
   './manifest.webmanifest.json',
   './css/app.css?v=8',
-  './js/main.js?v=61',
+  './js/main.js?v=62',
   './data/route.js?v=1',
   './data/route.json',
   './icons/icon.svg',
