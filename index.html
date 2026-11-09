@@ -227,8 +227,8 @@
 .splash .splash__label { animation: a-label .6s var(--ease-quart-out) 1.15s both; }
 
 .splash .splash__journey path.splash__route {
-  stroke-dasharray: 280;
-  stroke-dashoffset: 280;
+  stroke-dasharray: var(--route-len, 280);
+  stroke-dashoffset: var(--route-len, 280);
   animation: a-route 1.35s var(--ease-inout-route) .75s forwards;
 }
 .splash .splash__comet { animation: b-comet 1.35s var(--ease-inout-route) .75s both; }
@@ -304,8 +304,6 @@
 .splash.is-quick .splash__foot { animation-duration: .45s; animation-delay: .55s; }
 .splash.is-quick .splash__track span { animation-duration: 1.15s; animation-delay: .25s; }
 
-/* SMIL-маркер в быстром режиме едет чуть раньше */
-.splash.is-quick .splash__motion { opacity: .9; }
 
 @media (max-height: 640px) {
   .splash__brand { top: 34%; }
@@ -322,7 +320,7 @@
 }
     </style>
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/main.js?v=62" defer></script>
+    <script src="./js/main.js?v=63" defer></script>
   </head>
   <body>
     <div class="splash mode-brand" id="splash" aria-hidden="true">
@@ -342,18 +340,10 @@
       <svg class="splash__journey" viewBox="0 0 290 83" aria-hidden="true">
         <path class="splash__route" d="M14 63 H62 C83 63 83 20 111 20 H161 C189 20 185 63 215 63 H253"/>
         <path class="splash__comet" d="M14 63 H62 C83 63 83 20 111 20 H161 C189 20 185 63 215 63 H253"/>
-        <circle class="splash__motion" r="6" fill="#9af2f1" opacity="0">
-          <animateMotion dur="1.25s" begin="0.85s" fill="freeze" calcMode="spline"
-            keyTimes="0;1" keySplines="0.45 0.05 0.25 1"
-            path="M14 63 H62 C83 63 83 20 111 20 H161 C189 20 185 63 215 63 H253"/>
-          <animate attributeName="opacity" begin="0.85s" dur="0.12s" from="0" to=".26" fill="freeze"/>
-        </circle>
-        <circle class="splash__motion" r="2.7" fill="#d9fbfc" opacity="0">
-          <animateMotion dur="1.25s" begin="0.85s" fill="freeze" calcMode="spline"
-            keyTimes="0;1" keySplines="0.45 0.05 0.25 1"
-            path="M14 63 H62 C83 63 83 20 111 20 H161 C189 20 185 63 215 63 H253"/>
-          <animate attributeName="opacity" begin="0.85s" dur="0.12s" from="0" to="1" fill="freeze"/>
-        </circle>
+        <g class="splash__motion" opacity="0">
+          <circle r="6" fill="#9af2f1" opacity=".26"/>
+          <circle r="2.7" fill="#d9fbfc"/>
+        </g>
       </svg>
 
       <div class="splash__bottom">

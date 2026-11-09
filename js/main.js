@@ -85,14 +85,40 @@ const bootStartedAt = Date.now();
 let splashHidden = false;
 
 // Запускает фирменную анимацию заставки (в повторном запуске — укороченную).
+let markerRaf = 0;
+
+// Маркер едет ровно по кончику нарисованной линии: прогресс берём
+// из stroke-dashoffset, поэтому рассинхронизация с линией невозможна.
+function syncRouteMarker() {
+  cancelAnimationFrame(markerRaf);
+  const journey = splash ? splash.querySelector(".splash__journey") : null;
+  const path = journey ? journey.querySelector(".splash__route") : null;
+  const marker = journey ? journey.querySelector(".splash__motion") : null;
+  if (!path || !marker) return;
+
+  let total = 0;
+  try { total = path.getTotalLength(); } catch (error) { total = 0; }
+  if (!total) return;
+  path.style.setProperty("--route-len", String(total));
+
+  const tick = () => {
+    if (!path.isConnected) { markerRaf = 0; return; }
+    const offset = Math.abs(parseFloat(getComputedStyle(path).strokeDashoffset) || 0);
+    const progress = Math.max(0, Math.min(1, (total - offset) / total));
+    if (progress > 0.002) {
+      const point = path.getPointAtLength(total * progress);
+      marker.setAttribute("transform", "translate(" + point.x + " " + point.y + ")");
+      marker.setAttribute("opacity", "1");
+    }
+    if (progress >= 0.999) { markerRaf = 0; return; }
+    markerRaf = requestAnimationFrame(tick);
+  };
+  markerRaf = requestAnimationFrame(tick);
+}
+
 function startSplash() {
   if (!splash) return;
-  // SMIL-анимация маркера живёт по собственной шкале времени —
-  // выравниваем её со стартом заставки, иначе на медленной сети маркер отстаёт.
-  const journey = splash.querySelector(".splash__journey");
-  if (journey && typeof journey.setCurrentTime === "function") {
-    try { journey.setCurrentTime(0); } catch (error) { /* SMIL недоступен */ }
-  }
+  syncRouteMarker();
   // is-playing включает саму анимацию, is-quick — ускоренный тайминг для повторного запуска.
   splash.classList.add("is-playing");
   if (isRepeatLaunch) splash.classList.add("is-quick");
