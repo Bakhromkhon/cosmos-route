@@ -21,9 +21,9 @@
       .splash__brand { position: absolute; top: 40%; left: 50%; width: 100%; max-width: 390px; transform: translate(-50%, -50%); display: grid; justify-items: center; }
       .splash__logo { display: block; width: min(78%, 300px); height: auto; }
     </style>
-    <link rel="stylesheet" href="./css/app.css?v=5">
+    <link rel="stylesheet" href="./css/app.css?v=6">
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/main.js?v=55" defer></script>
+    <script src="./js/main.js?v=56" defer></script>
   </head>
   <body>
     <div class="splash mode-brand" id="splash" aria-hidden="true">
@@ -248,7 +248,10 @@
           <div class="viewer__body">
             <section class="stage" aria-label="Фото ориентира">
               <div class="stage__frame">
-                <img id="stepImage" src="./assets/images/step-1-fasad-v2.jpg" alt="Фасад отеля" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Открыть фото ориентира">
+                <picture class="stage__picture">
+                  <source id="stepImageWebp" type="image/webp" sizes="(max-width: 900px) 92vw, 640px">
+                  <img id="stepImage" src="./assets/images/step-1-fasad-v2.jpg" alt="Фасад отеля" tabindex="0" role="button" aria-haspopup="dialog" aria-label="Открыть фото ориентира" decoding="async">
+                </picture>
                 <span class="stage__hint"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg> Нажмите, чтобы увеличить</span>
                 <div class="stage__overlay" id="stageOverlay" aria-hidden="true"><strong id="titleBlock">ОРИЕНТИР</strong><span id="stepActionOverlay">Идите к входу для персонала.</span></div>
               </div>

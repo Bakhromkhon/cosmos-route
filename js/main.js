@@ -38,6 +38,7 @@ const viewerEyebrow = document.getElementById("viewerEyebrow");
 const viewer = document.getElementById("viewer");
 const footerProgress = document.getElementById("footerProgress");
 const stepImage = document.getElementById("stepImage");
+const stepImageWebp = document.getElementById("stepImageWebp");
 const stepActionOverlay = document.getElementById("stepActionOverlay");
 const titleBlock = document.getElementById("titleBlock");
 const stepTitle = document.getElementById("stepTitle");
@@ -79,7 +80,7 @@ const SPLASH_KEY = "cosmos-splash-seen";
 const isRepeatLaunch = (() => {
   try { return sessionStorage.getItem(SPLASH_KEY) === "1"; } catch (error) { return false; }
 })();
-const SPLASH_MIN_MS = isRepeatLaunch ? 750 : 2000;
+const SPLASH_MIN_MS = isRepeatLaunch ? 700 : 2900;
 const bootStartedAt = Date.now();
 let splashHidden = false;
 
@@ -100,7 +101,7 @@ function hideSplash() {
     document.body.classList.add("is-ready");
     if (!splash) return;
     splash.classList.add("is-done");
-    setTimeout(() => splash.remove(), 700);
+    setTimeout(() => splash.remove(), isRepeatLaunch ? 380 : 700);
   }, wait);
 }
 const supervisorLabel = document.getElementById("supervisorLabel");
@@ -258,6 +259,11 @@ function renderStep() {
   footerProgress.textContent = "Шаг " + (currentStepIndex + 1) + " из " + steps.length;
 
   stepImage.classList.remove("is-loaded", "is-swapping");
+  // WebP в двух размерах: телефон берёт 1000px, десктоп — 1400px.
+  const imageBase = String(step.image).replace(/\.jpe?g$/i, "");
+  if (stepImageWebp) {
+    stepImageWebp.srcset = imageBase + "-1000.webp 1000w, " + imageBase + "-1400.webp 1400w";
+  }
   stepImage.src = step.image;
   // Размытая копия того же оригинального фото заполняет поля без обрезки стрелок.
   const guidePhotoFrame = stepImage.closest('.stage__frame');
@@ -416,6 +422,11 @@ async function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   // По file:// service worker зарегистрировать нельзя — тихо пропускаем.
   if (window.location.protocol === "file:") return;
+
+  // Просим браузер не вычищать кеш: офлайн-маршрут должен оставаться доступным.
+  if (navigator.storage && typeof navigator.storage.persist === "function") {
+    navigator.storage.persist().catch(() => {});
+  }
   try {
     const registration = await navigator.serviceWorker.register("./sw.js");
     navigator.serviceWorker.addEventListener("controllerchange", () => {
@@ -589,12 +600,17 @@ async function loadRouteData() {
     const res = await fetch("./data/route.json", { cache: "no-cache" });
     if (!res.ok) throw new Error("route.json: HTTP " + res.status);
     return await res.json();
-  } catch (error) {
+  } catch (firstError) {
+    // Один повтор: помогает на нестабильном мобильном соединении.
+    try {
+      const retry = await fetch("./data/route.json", { cache: "reload" });
+      if (retry.ok) return await retry.json();
+    } catch (retryError) { /* офлайн — уходим во встроенную копию */ }
     if (inline) {
       console.info("[main] route.json недоступен, использую встроенные данные data/route.js");
       return inline;
     }
-    throw error;
+    throw firstError;
   }
 }
 
