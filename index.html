@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#123b34">
+    <meta name="theme-color" content="#0b1935">
     <meta name="description" content="Пошаговый офлайн-маршрут до ресторана «Шведская Линия» в отеле Космос Прибалтийская.">
     <meta name="color-scheme" content="light">
     <title>Маршрут до ресторана · COSMOS</title>
@@ -12,9 +12,9 @@
     <link rel="manifest" href="./manifest.webmanifest.json">
     <link rel="preload" href="./assets/fonts/playfair-display-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="./assets/fonts/inter-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="./css/app.css?v=3">
+    <link rel="stylesheet" href="./css/app.css?v=4">
     <script src="./data/route.js?v=1" defer></script>
-    <script src="./js/main.js?v=52" defer></script>
+    <script src="./js/main.js?v=53" defer></script>
   </head>
   <body>
     <div class="splash" id="splash" aria-hidden="true">
@@ -156,7 +156,8 @@
       </section>
 
       <section class="screen screen--nav" id="navScreen" aria-label="Пошаговый маршрут" aria-live="off">
-        <aside class="route-panel" aria-label="Шаги маршрута">
+        <div class="guide-menu-backdrop" id="guideMenuBackdrop" hidden></div>
+        <aside class="route-panel" id="guideMenu" aria-label="Шаги маршрута">
           <div class="route-panel__head">
             <div class="route-panel__title-row"><span class="route-panel__kicker">ТВОЙ МАРШРУТ</span><span class="route-panel__duration"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="routeEstimatedTimeAside">5–7 мин</span></span></div>
             <h2>Путь до ресторана</h2>
@@ -185,6 +186,22 @@
         </aside>
 
         <div class="viewer" id="viewer">
+          <!-- COSMOS GUIDE · компактная мобильная панель маршрута -->
+          <header class="guide-topbar" aria-label="Управление мобильным маршрутом">
+            <div class="guide-topbar__main">
+              <div class="guide-wordmark" aria-label="COSMOS Staff Route">COSMOS <small>STAFF ROUTE</small></div>
+              <span class="guide-step-counter" id="guideStepCounter">01 <span>/ 10</span></span>
+              <div class="guide-topbar__controls">
+                <button class="guide-icon-btn" id="guideAudioButton" type="button" aria-label="Включить голосовые подсказки" aria-pressed="false" title="Голосовые подсказки">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13V11a8 8 0 0 1 16 0v2"/><rect x="2" y="12" width="4" height="8" rx="2"/><rect x="18" y="12" width="4" height="8" rx="2"/></svg>
+                </button>
+                <button class="guide-icon-btn" id="guideMenuButton" type="button" aria-label="Открыть список шагов" aria-expanded="false" aria-controls="guideMenu" title="Все шаги">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="guide-progress" aria-hidden="true"><span id="guideProgressFill"></span></div>
+          </header>
           <header class="viewer__header">
             <div class="viewer__title">
               <span id="viewerEyebrow">ШАГ 1 ИЗ 10</span>
@@ -227,6 +244,7 @@
               </div>
               <p class="details__lead" id="stepDescription">Старт у фасада COSMOS.</p>
               <p class="mobile-action-lead" id="mobileActionLead"></p>
+              <button class="guide-more-button" id="guideMoreButton" type="button" aria-label="Подробности и помощь" aria-haspopup="dialog" aria-controls="guideInfoSheet" title="Подробнее"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></button>
 
               <section class="box action-card" id="actionBox" aria-labelledby="actionTitle">
                 <div class="box__heading"><span class="action-card__symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13m-5-5 5 5-5 5"/></svg></span><h2 id="actionTitle">ТВОЁ ДЕЙСТВИЕ</h2></div>
@@ -269,5 +287,15 @@
         <img id="modalImage" src="" alt="">
       </div>
     </div>
+      <div class="guide-info-backdrop" id="guideInfoBackdrop" hidden></div>
+    <section class="guide-info-sheet" id="guideInfoSheet" role="dialog" aria-modal="true" aria-label="Подробности шага" hidden>
+      <div class="guide-info-sheet__header"><span>ПОДРОБНОСТИ МАРШРУТА</span><button id="guideInfoClose" type="button" aria-label="Закрыть подробности"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <h2 id="guideInfoTitle">Шаг маршрута</h2>
+      <p id="guideInfoAction"></p>
+      <div class="guide-info-script" id="guideInfoScript" hidden><strong>ЧТО СКАЗАТЬ</strong><p id="guideInfoScriptText"></p></div>
+      <ul id="guideInfoDetails"></ul>
+      <div class="guide-info-contact"><span>Супервайзер</span><strong id="guideInfoContact">2753 / 2747</strong></div>
+      <button class="guide-info-back" id="guideInfoBack" type="button">Вернуться к фотографии</button>
+    </section>
   </body>
 </html>

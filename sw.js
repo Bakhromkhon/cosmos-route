@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v54';
+const CACHE_VERSION = 'green-route-v55';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
@@ -6,14 +6,14 @@ const SHELL_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest.json',
-  './css/app.css?v=3',
+  './css/app.css?v=4',
   './icons/icon.svg',
   './icons/icon-maskable.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
   './data/route.js?v=1',
-  './js/main.js?v=52',
+  './js/main.js?v=53',
   './data/route.json',
   './assets/fonts/inter-normal-cyrillic.woff2',
   './assets/fonts/inter-normal-latin.woff2',

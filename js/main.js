@@ -155,6 +155,9 @@ function applyRouteObject() {
 }
 
 function showScreen(screenName) {
+  document.body.classList.toggle("guide-active", screenName === "nav");
+  if (screenName !== "nav") { stopGuideVoice(); closeGuideMenu(); closeGuideInfo(); }
+  if (screenName === "nav" && installBanner) installBanner.hidden = true;
   introScreen.classList.toggle("is-active", screenName === "intro");
   navScreen.classList.toggle("is-active", screenName === "nav");
   saveToStorage(STORAGE_KEYS.screen, screenName);
@@ -185,7 +188,7 @@ function buildTimeline() {
     btn.appendChild(dot);
     btn.appendChild(icon);
     btn.appendChild(content);
-    btn.addEventListener("click", () => { currentStepIndex = index; renderStep(); });
+    btn.addEventListener("click", () => { currentStepIndex = index; renderStep(); closeGuideMenu(); });
     timeline.appendChild(btn);
   });
 }
@@ -244,6 +247,9 @@ function renderStep() {
 
   stepImage.classList.remove("is-loaded", "is-swapping");
   stepImage.src = step.image;
+  // Размытая копия того же оригинального фото заполняет поля без обрезки стрелок.
+  const guidePhotoFrame = stepImage.closest('.stage__frame');
+  if (guidePhotoFrame) guidePhotoFrame.style.setProperty('--guide-photo-url', `url("${step.image}")`);
   stepImage.classList.add("is-swapping");
   stepImage.onload = function onImageLoaded() {
     stepImage.classList.remove("is-swapping");
@@ -307,6 +313,7 @@ function renderStep() {
   nextButton.textContent = isFinalStep ? "Вы на месте" : "Далее";
 
   renderTimelineState();
+  updateGuideUI(step);
 }
 
 function restartRoute() {
@@ -427,6 +434,7 @@ function initEventListeners() {
   startRouteButton.addEventListener("click", () => {
     if (startRouteButton.disabled) return;
     showScreen("nav");
+    updateGuideUI(steps[currentStepIndex]);
   });
 
   startOverButton.addEventListener("click", () => {
@@ -537,7 +545,7 @@ function initEventListeners() {
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    installBanner.hidden = false;
+    installBanner.hidden = navScreen.classList.contains("is-active");
   });
   window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
@@ -594,6 +602,7 @@ async function boot() {
     if (stepCountStat) stepCountStat.textContent = String(totalPoints);
 
     initEventListeners();
+    initGuideControls();
     applyRouteObject();
     buildTimeline();
     restoreState();
@@ -630,6 +639,128 @@ function showBootError() {
   retry.addEventListener("click", () => window.location.reload());
   panel.append(title, message, retry);
   retry.focus();
+}
+
+
+/* ══════════════════════════════════════════════════
+   COSMOS GUIDE · мобильно-фото навигация и голосовые подсказки
+   TTS использует доступные браузеру голоса, офлайн зависит от устройства.
+   ══════════════════════════════════════════════════ */
+let guideVoiceEnabled = false;
+let guideSpeechSequence = 0;
+const guideStepCounter = document.getElementById('guideStepCounter');
+const guideProgressFill = document.getElementById('guideProgressFill');
+const guideAudioButton = document.getElementById('guideAudioButton');
+const guideMenuButton = document.getElementById('guideMenuButton');
+const guideMenu = document.getElementById('guideMenu');
+const guideMenuBackdrop = document.getElementById('guideMenuBackdrop');
+const guideMoreButton = document.getElementById('guideMoreButton');
+const guideInfoSheet = document.getElementById('guideInfoSheet');
+const guideInfoBackdrop = document.getElementById('guideInfoBackdrop');
+const guideInfoClose = document.getElementById('guideInfoClose');
+const guideInfoBack = document.getElementById('guideInfoBack');
+
+function closeGuideMenu() {
+  if (!guideMenu) return;
+  guideMenu.classList.remove('is-open');
+  guideMenuBackdrop.hidden = true;
+  guideMenuButton.setAttribute('aria-expanded', 'false');
+  guideMenuButton.setAttribute('aria-label', 'Открыть список шагов');
+}
+function toggleGuideMenu() {
+  if (!guideMenu) return;
+  const open = !guideMenu.classList.contains('is-open');
+  guideMenu.classList.toggle('is-open', open);
+  guideMenuBackdrop.hidden = !open;
+  guideMenuButton.setAttribute('aria-expanded', String(open));
+  guideMenuButton.setAttribute('aria-label', open ? 'Закрыть список шагов' : 'Открыть список шагов');
+}
+function closeGuideInfo() {
+  if (!guideInfoSheet) return;
+  guideInfoSheet.hidden = true;
+  guideInfoBackdrop.hidden = true;
+}
+function openGuideInfo() {
+  if (!guideInfoSheet || !steps.length) return;
+  const step = steps[currentStepIndex];
+  document.getElementById('guideInfoTitle').textContent = step.title;
+  document.getElementById('guideInfoAction').textContent = step.action;
+  const list = document.getElementById('guideInfoDetails');
+  list.replaceChildren();
+  (step.details || []).forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    list.appendChild(li);
+  });
+  const script = document.getElementById('guideInfoScript');
+  script.hidden = !step.script;
+  document.getElementById('guideInfoScriptText').textContent = step.script || '';
+  document.getElementById('guideInfoContact').textContent = (routeObject?.supervisor?.numbers || []).join(' / ');
+  guideInfoBackdrop.hidden = false;
+  guideInfoSheet.hidden = false;
+  guideInfoClose.focus();
+}
+function stopGuideVoice() {
+  guideSpeechSequence++;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+function setGuideAudioState() {
+  guideAudioButton.classList.toggle('is-on', guideVoiceEnabled);
+  guideAudioButton.setAttribute('aria-pressed', String(guideVoiceEnabled));
+  guideAudioButton.setAttribute('aria-label', guideVoiceEnabled ? 'Выключить голосовые подсказки' : 'Включить голосовые подсказки');
+  guideAudioButton.title = guideVoiceEnabled ? 'Голосовые подсказки включены' : 'Голосовые подсказки выключены';
+}
+function speakGuideStep() {
+  stopGuideVoice();
+  if (!guideVoiceEnabled || !steps.length || !('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance === 'undefined') return;
+  const seq = guideSpeechSequence;
+  const step = steps[currentStepIndex];
+  const text = `Шаг ${currentStepIndex + 1} из ${steps.length}. ${step.title}. ${step.action}`;
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = 'ru-RU';
+  speech.rate = .90;
+  speech.pitch = 1;
+  try {
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.toLowerCase() === 'ru-ru') || voices.find(v => v.lang.toLowerCase().startsWith('ru'));
+    if (voice) speech.voice = voice;
+    if (seq === guideSpeechSequence) window.speechSynthesis.speak(speech);
+  } catch (error) {
+    console.warn('[guide] Голосовые подсказки недоступны:', error);
+  }
+}
+function updateGuideUI(step) {
+  if (!step || !steps.length) return;
+  guideStepCounter.innerHTML = `${String(currentStepIndex + 1).padStart(2, '0')} <span>/ ${String(steps.length).padStart(2, '0')}</span>`;
+  guideProgressFill.style.width = Math.round(100 * (currentStepIndex + 1) / steps.length) + '%';
+  closeGuideInfo();
+  if (guideVoiceEnabled && navScreen.classList.contains('is-active')) speakGuideStep();
+}
+function initGuideControls() {
+  guideMenuButton.addEventListener('click', toggleGuideMenu);
+  guideMenuBackdrop.addEventListener('click', closeGuideMenu);
+  guideMoreButton.addEventListener('click', openGuideInfo);
+  guideInfoClose.addEventListener('click', closeGuideInfo);
+  guideInfoBack.addEventListener('click', closeGuideInfo);
+  guideInfoBackdrop.addEventListener('click', closeGuideInfo);
+  guideAudioButton.addEventListener('click', () => {
+    if (!('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance === 'undefined') {
+      guideAudioButton.title = 'На этом устройстве озвучка не поддерживается';
+      guideAudioButton.setAttribute('aria-label', 'Озвучка не поддерживается на устройстве');
+      return;
+    }
+    guideVoiceEnabled = !guideVoiceEnabled;
+    setGuideAudioState();
+    if (guideVoiceEnabled) speakGuideStep();
+    else stopGuideVoice();
+  });
+  window.addEventListener('pagehide', stopGuideVoice);
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!guideInfoSheet.hidden) { event.stopPropagation(); closeGuideInfo(); guideMoreButton.focus(); }
+    else if (guideMenu.classList.contains('is-open')) { event.stopPropagation(); closeGuideMenu(); guideMenuButton.focus(); }
+  }, true);
+  setGuideAudioState();
 }
 
 boot();
