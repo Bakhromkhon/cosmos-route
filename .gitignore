@@ -8,3 +8,5 @@ tmp/
 # Старые версии фотографий (используются только *-v2.jpg)
 assets/images/*.jpg
 !assets/images/*-v2.jpg
+# Пакет ElevenLabs (источник аудио, дублируется в assets/audio/)
+COSMOS_GUIDE_ELEVENLABS_PATCH/

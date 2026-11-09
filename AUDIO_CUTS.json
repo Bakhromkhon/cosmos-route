@@ -1,0 +1,106 @@
+{
+  "source": "ElevenLabs_2026-11-09T06_00_05_Stanislav - Deep, Empathetic and Warm_pvc_s50_sim75_v4.mp3",
+  "method": "silence-boundary based (manual speech review recommended)",
+  "tracks": [
+    {
+      "step": 1,
+      "title": "Фасад отеля",
+      "name": "step-01.mp3",
+      "duration_seconds": 13.91,
+      "start_seconds": 0.0,
+      "end_seconds": 13.91,
+      "size_bytes": 223651,
+      "sha256": "c2ca6e926c3077646ea3d62de6c3b939e5616ef0f28cea0ed372f2ada43f3405"
+    },
+    {
+      "step": 2,
+      "title": "Служебный вход",
+      "name": "step-02.mp3",
+      "duration_seconds": 11.55,
+      "start_seconds": 13.91,
+      "end_seconds": 25.46,
+      "size_bytes": 186034,
+      "sha256": "95c0d2892392d5748f7dfb72afa9c9b0766b4faea3748c5a6826db05007d9bf6"
+    },
+    {
+      "step": 3,
+      "title": "Охрана",
+      "name": "step-03.mp3",
+      "duration_seconds": 19.95,
+      "start_seconds": 25.46,
+      "end_seconds": 45.41,
+      "size_bytes": 320199,
+      "sha256": "fe7b19f276197527fff87938b47e4116e56192e0634a29427b613b8c16ae70a2"
+    },
+    {
+      "step": 4,
+      "title": "Шкафчик",
+      "name": "step-04.mp3",
+      "duration_seconds": 13.28,
+      "start_seconds": 45.41,
+      "end_seconds": 58.69,
+      "size_bytes": 213620,
+      "sha256": "333c75d2687b070a368e1547353695a64d662130cd1176ce69f5f3c928501661"
+    },
+    {
+      "step": 5,
+      "title": "Раздевалки",
+      "name": "step-05.mp3",
+      "duration_seconds": 15.47,
+      "start_seconds": 58.69,
+      "end_seconds": 74.16,
+      "size_bytes": 248728,
+      "sha256": "c05eaa6722611a861c124f0181032071e84b8ff0f2ee8a2498828380174f88e7"
+    },
+    {
+      "step": 6,
+      "title": "Зелёный коридор",
+      "name": "step-06.mp3",
+      "duration_seconds": 12.9,
+      "start_seconds": 74.16,
+      "end_seconds": 87.06,
+      "size_bytes": 207350,
+      "sha256": "84320de6561f9ddb3e08c646bba3b9d728e707fa364b7993be63c4a62c7cea7f"
+    },
+    {
+      "step": 7,
+      "title": "Прачечная",
+      "name": "step-07.mp3",
+      "duration_seconds": 14.26,
+      "start_seconds": 87.06,
+      "end_seconds": 101.32,
+      "size_bytes": 229084,
+      "sha256": "271bee20a0722192ff8f7621e1823e1ccfcedf94c325088541b1e646ff65ae46"
+    },
+    {
+      "step": 8,
+      "title": "Лифты",
+      "name": "step-08.mp3",
+      "duration_seconds": 10.8,
+      "start_seconds": 101.32,
+      "end_seconds": 112.12,
+      "size_bytes": 173914,
+      "sha256": "389f6742503c4379241557f0dee4ececbeb1bf474912977a76212bd75f1bc946"
+    },
+    {
+      "step": 9,
+      "title": "Коричневая дверь",
+      "name": "step-09.mp3",
+      "duration_seconds": 15.38,
+      "start_seconds": 112.12,
+      "end_seconds": 127.5,
+      "size_bytes": 247056,
+      "sha256": "3c100a646723b6505c99ddf6a12f4376d9bc1086267e02137e1568619d65c15e"
+    },
+    {
+      "step": 10,
+      "title": "Ресторан «Шведская Линия»",
+      "name": "step-10.mp3",
+      "duration_seconds": 19.57,
+      "start_seconds": 127.5,
+      "end_seconds": 147.069,
+      "size_bytes": 314348,
+      "sha256": "b9d9b5c92dc309be958661701d3173c23b5a3853ebc772ca3e6ba7f462d2c0dd"
+    }
+  ]
+}

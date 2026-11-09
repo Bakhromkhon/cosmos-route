@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'green-route-v55';
+const CACHE_VERSION = 'green-route-v56';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
@@ -13,7 +13,7 @@ const SHELL_ASSETS = [
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
   './data/route.js?v=1',
-  './js/main.js?v=53',
+  './js/main.js?v=54',
   './data/route.json',
   './assets/fonts/inter-normal-cyrillic.woff2',
   './assets/fonts/inter-normal-latin.woff2',
@@ -30,7 +30,17 @@ const SHELL_ASSETS = [
   './assets/images/step-8-prachechnaya-v2.jpg',
   './assets/images/step-9-lift-v2.jpg',
   './assets/images/step-10-dver-v2.jpg',
-  './assets/images/step-11-green-v2.jpg'
+  './assets/images/step-11-green-v2.jpg',
+  './assets/audio/step-01.mp3',
+  './assets/audio/step-02.mp3',
+  './assets/audio/step-03.mp3',
+  './assets/audio/step-04.mp3',
+  './assets/audio/step-05.mp3',
+  './assets/audio/step-06.mp3',
+  './assets/audio/step-07.mp3',
+  './assets/audio/step-08.mp3',
+  './assets/audio/step-09.mp3',
+  './assets/audio/step-10.mp3'
 ];
 
 async function addAllSafe(cacheName, assets) {
@@ -77,6 +87,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // MP3: поддерживаем Range requests (Safari / iOS, включая офлайн-режим).
+  if (request.destination === 'audio' || url.pathname.includes('/assets/audio/')) {
+    event.respondWith(serveAudio(request));
+    return;
+  }
+
   if (request.destination === 'font') {
     event.respondWith(cacheFirst(request, SHELL_CACHE));
     return;
@@ -120,5 +136,53 @@ async function networkFirst(request, fallbackUrl) {
     status: 503,
     statusText: 'Offline',
     headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  });
+}
+
+
+// Важное: браузерные аудиоплееры могут посылать Range: bytes=0-.
+// Обычный CacheStorage хранит полные 200-ответы, а плеер ожидает 206.
+// Возвращаем корректный диапазон из прекешированного MP3.
+async function serveAudio(request) {
+  const cache = await caches.open(SHELL_CACHE);
+  let full = await cache.match(request.url);
+  if (!full) {
+    try {
+      const result = await fetch(new Request(request.url));
+      if (!result.ok || result.status !== 200) return result;
+      await cache.put(request.url, result.clone());
+      full = result;
+    } catch (error) {
+      return new Response('Аудиофайл недоступен офлайн', {status: 503});
+    }
+  }
+
+  const range = request.headers.get('Range');
+  if (!range) return full;
+  const match = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  if (!match) return full;
+  const bytes = await full.arrayBuffer();
+  const size = bytes.byteLength;
+  let start;
+  let end;
+  if (match[1] === '') { // bytes=-N
+    const count = Number(match[2]);
+    if (!count) return new Response(null, {status: 416, headers: {'Content-Range': `bytes */${size}`}});
+    start = Math.max(0, size - count);
+    end = size - 1;
+  } else {
+    start = Number(match[1]);
+    end = match[2] ? Math.min(Number(match[2]), size - 1) : size - 1;
+  }
+  if (start >= size || start > end) return new Response(null, {status: 416, headers: {'Content-Range': `bytes */${size}`}});
+  const data = bytes.slice(start, end + 1);
+  return new Response(data, {
+    status: 206,
+    headers: {
+      'Content-Type': full.headers.get('Content-Type') || 'audio/mpeg',
+      'Content-Range': `bytes ${start}-${end}/${size}`,
+      'Content-Length': String(data.byteLength),
+      'Accept-Ranges': 'bytes'
+    }
   });
 }

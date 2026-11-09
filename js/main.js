@@ -644,10 +644,13 @@ function showBootError() {
 
 /* ══════════════════════════════════════════════════
    COSMOS GUIDE · мобильно-фото навигация и голосовые подсказки
-   TTS использует доступные браузеру голоса, офлайн зависит от устройства.
+   ElevenLabs MP3 озвучка офлайн после загрузки PWA; TTS только запасной вариант.
    ══════════════════════════════════════════════════ */
 let guideVoiceEnabled = false;
 let guideSpeechSequence = 0;
+let guideFallbackStartedSequence = -1;
+const guideAudioPlayer = new Audio();
+guideAudioPlayer.preload = 'auto';
 const guideStepCounter = document.getElementById('guideStepCounter');
 const guideProgressFill = document.getElementById('guideProgressFill');
 const guideAudioButton = document.getElementById('guideAudioButton');
@@ -702,21 +705,26 @@ function openGuideInfo() {
 }
 function stopGuideVoice() {
   guideSpeechSequence++;
+  guideAudioPlayer.onerror = null;
+  guideAudioPlayer.pause();
+  try { guideAudioPlayer.currentTime = 0; } catch (_) { /* no media loaded yet */ }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 function setGuideAudioState() {
   guideAudioButton.classList.toggle('is-on', guideVoiceEnabled);
   guideAudioButton.setAttribute('aria-pressed', String(guideVoiceEnabled));
-  guideAudioButton.setAttribute('aria-label', guideVoiceEnabled ? 'Выключить голосовые подсказки' : 'Включить голосовые подсказки');
-  guideAudioButton.title = guideVoiceEnabled ? 'Голосовые подсказки включены' : 'Голосовые подсказки выключены';
+  guideAudioButton.setAttribute('aria-label', guideVoiceEnabled ? 'Выключить аудиогид ElevenLabs' : 'Включить аудиогид ElevenLabs');
+  guideAudioButton.title = guideVoiceEnabled ? 'Аудиогид включён · голос Stanislav' : 'Включить аудиогид · голос Stanislav';
 }
-function speakGuideStep() {
-  stopGuideVoice();
-  if (!guideVoiceEnabled || !steps.length || !('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance === 'undefined') return;
-  const seq = guideSpeechSequence;
+function speakGuideFallback(sequence) {
+  if (guideFallbackStartedSequence === sequence || !guideVoiceEnabled || sequence !== guideSpeechSequence) return;
+  guideFallbackStartedSequence = sequence;
+  if (!('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance === 'undefined') {
+    guideAudioButton.title = 'Запись не загружена. Проверьте файлы assets/audio/';
+    return;
+  }
   const step = steps[currentStepIndex];
-  const text = `Шаг ${currentStepIndex + 1} из ${steps.length}. ${step.title}. ${step.action}`;
-  const speech = new SpeechSynthesisUtterance(text);
+  const speech = new SpeechSynthesisUtterance(`Шаг ${currentStepIndex + 1} из ${steps.length}. ${step.title}. ${step.action}`);
   speech.lang = 'ru-RU';
   speech.rate = .90;
   speech.pitch = 1;
@@ -724,9 +732,38 @@ function speakGuideStep() {
     const voices = window.speechSynthesis.getVoices();
     const voice = voices.find(v => v.lang.toLowerCase() === 'ru-ru') || voices.find(v => v.lang.toLowerCase().startsWith('ru'));
     if (voice) speech.voice = voice;
-    if (seq === guideSpeechSequence) window.speechSynthesis.speak(speech);
-  } catch (error) {
-    console.warn('[guide] Голосовые подсказки недоступны:', error);
+    if (sequence === guideSpeechSequence) {
+      guideAudioButton.title = 'MP3 недоступен — используется голос браузера';
+      window.speechSynthesis.speak(speech);
+    }
+  } catch (error) { console.warn('[guide] Запасной голос недоступен:', error); }
+}
+function speakGuideStep() {
+  stopGuideVoice();
+  if (!guideVoiceEnabled || !steps.length) return;
+  const sequence = guideSpeechSequence;
+  const audioPath = `./assets/audio/step-${String(currentStepIndex + 1).padStart(2, '0')}.mp3`;
+  guideAudioPlayer.onerror = () => {
+    if (sequence !== guideSpeechSequence) return;
+    console.warn('[guide] ElevenLabs MP3 не загрузился:', audioPath);
+    speakGuideFallback(sequence);
+  };
+  guideAudioPlayer.src = audioPath;
+  guideAudioPlayer.load();
+  const playPromise = guideAudioPlayer.play();
+  if (playPromise && typeof playPromise.catch === 'function') {
+    playPromise.catch(error => {
+      if (sequence !== guideSpeechSequence || error?.name === 'AbortError') return;
+      if (error?.name === 'NotAllowedError') {
+        console.info('[guide] Для воспроизведения нужен пользовательский жест.');
+        guideVoiceEnabled = false;
+        setGuideAudioState();
+        guideAudioButton.title = 'Нажмите ещё раз для запуска аудио';
+        return;
+      }
+      console.warn('[guide] Невозможно воспроизвести MP3:', error);
+      speakGuideFallback(sequence);
+    });
   }
 }
 function updateGuideUI(step) {
@@ -744,11 +781,6 @@ function initGuideControls() {
   guideInfoBack.addEventListener('click', closeGuideInfo);
   guideInfoBackdrop.addEventListener('click', closeGuideInfo);
   guideAudioButton.addEventListener('click', () => {
-    if (!('speechSynthesis' in window) || typeof window.SpeechSynthesisUtterance === 'undefined') {
-      guideAudioButton.title = 'На этом устройстве озвучка не поддерживается';
-      guideAudioButton.setAttribute('aria-label', 'Озвучка не поддерживается на устройстве');
-      return;
-    }
     guideVoiceEnabled = !guideVoiceEnabled;
     setGuideAudioState();
     if (guideVoiceEnabled) speakGuideStep();
